@@ -10,7 +10,7 @@ def show():
     st.markdown("---")
 
     # Netflix-style banner image
-    st.image("app/banner1.png", use_container_width=True)
+    st.image("app/netflix-banner.png", use_container_width=True)
 
     # Project authors
     st.markdown("<h4 style='color:red;'>👥 Project Team</h4>", unsafe_allow_html=True)
