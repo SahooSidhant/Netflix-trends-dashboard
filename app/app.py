@@ -11,7 +11,7 @@ st.set_page_config(page_title="Netflix Trends App", layout="wide")
 
 # Try loading Netflix logo
 try:
-    logo = Image.open("app/Netflix-logo.png")
+    logo = Image.open("app/Netflix-Logo.png")
 except FileNotFoundError:
     st.warning("Netflix logo not found. Please ensure 'Netflix-logo.png' is in the same folder as app.py.")
     logo = None
