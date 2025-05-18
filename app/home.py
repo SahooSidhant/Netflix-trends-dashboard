@@ -10,7 +10,7 @@ def show():
     st.markdown("---")
 
     # Netflix-style banner image
-    st.image("banner1.png", use_container_width=True)
+    st.image("app/banner1.png", use_container_width=True)
 
     # Project authors
     st.markdown("<h4 style='color:red;'>👥 Project Team</h4>", unsafe_allow_html=True)
@@ -18,11 +18,13 @@ def show():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.image("4140052.png", width=60)
+        st.image("app/4140052.png", width=60)
+
+
         st.markdown("<p style='color:white; font-size:18px;'><b>Sidhanta Sahoo</b></p>", unsafe_allow_html=True)
 
     with col2:
-        st.image("6997674.png", width=60)
+        st.image("app/6997674.png", width=60)
         st.markdown("<p style='color:white; font-size:18px;'><b>Somen Mandal</b></p>", unsafe_allow_html=True)
 
     st.markdown("---")
