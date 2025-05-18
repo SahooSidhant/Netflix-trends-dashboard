@@ -5,7 +5,7 @@ def show():
 
     st.markdown("This dashboard provides deep insights using Power BI visualization tools embedded below.")
 
-    powerbi_embed_url = "https://app.powerbi.com/view?r=eyJrIjoiNGZmY2ZhZjktYzg2Ny00MzY5LTljZmMtNDBhZDZlM2NlMmVlIiwidCI6ImUwMWI2ZDg3LTRhNGEtNGQ1YS1hMjc0LTVjMGIyMDI3MGVhZiJ9"
+    powerbi_embed_url = "https://app.powerbi.com/view?r=eyJrIjoiMWQ2MjRhOTktZTQyMy00MWVkLWE5MDYtY2Y1NjQ5NjhmZjM2IiwidCI6ImUwMWI2ZDg3LTRhNGEtNGQ1YS1hMjc0LTVjMGIyMDI3MGVhZiJ9"
 
     st.markdown(
         f"""
