@@ -10,7 +10,7 @@ def show():
     st.title("📊 Exploratory Data Analysis")
 
     # Load cleaned Netflix dataset (make sure the path is correct)
-    df = pd.read_csv("Data/netflix_cleaned.csv")
+    df = pd.read_csv("data/netflix_cleaned.csv")
 
     # Clean 'duration' column: extract numeric minutes only
     df['duration'] = df['duration'].str.extract('(\d+)').astype(float)
