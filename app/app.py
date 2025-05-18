@@ -1,14 +1,20 @@
+# app/app.py
+
 import streamlit as st
 from PIL import Image
 import home
 import eda_charts
 import powerbi
 
-# Must be the very first Streamlit command
+# Streamlit page configuration
 st.set_page_config(page_title="Netflix Trends App", layout="wide")
 
-# Load Netflix logo image
-logo = Image.open("Netflix-logo.png")
+# Try loading Netflix logo
+try:
+    logo = Image.open("Netflix-logo.png")
+except FileNotFoundError:
+    st.warning("Netflix logo not found. Please ensure 'Netflix-logo.png' is in the same folder as app.py.")
+    logo = None
 
 # Inject custom CSS for navbar styling
 st.markdown("""
@@ -26,10 +32,6 @@ body {
     align-items: center;
     gap: 60px;
     border-radius: 0 0 12px 12px;
-}
-.nav-radio {
-    display: flex !important;
-    gap: 25px;
 }
 div[data-baseweb="radio"] > div {
     display: flex !important;
@@ -56,17 +58,17 @@ div[data-baseweb="radio"] label[data-selected="true"] {
 # Navbar container
 with st.container():
     st.markdown('<div class="navbar">', unsafe_allow_html=True)
-    st.image(logo, width=110)
+    if logo:
+        st.image(logo, width=110)
     page = st.radio(
-        "",
-        ["Home", "EDA Charts", "Power BI"],
+        "", ["Home", "EDA Charts", "Power BI"],
         horizontal=True,
         key="page",
         label_visibility="collapsed"
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
-# Page routing based on radio selection
+# Route to selected page
 if page == "Home":
     home.show()
 elif page == "EDA Charts":

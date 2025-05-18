@@ -1,3 +1,5 @@
+# app/home.py
+
 import streamlit as st
 from PIL import Image
 
@@ -7,11 +9,11 @@ def show():
     st.markdown("<h4 style='color:white;'>Unlocking Global Insights from Netflix Titles Over Time</h4>", unsafe_allow_html=True)
     st.markdown("---")
 
-    # Display Netflix-style banner image
+    # Netflix-style banner image
     st.image("banner1.png", use_container_width=True)
 
-    # Project authors section
-    st.markdown("<h4 style='color:white;'>👥 Project Team</h4>", unsafe_allow_html=True)
+    # Project authors
+    st.markdown("<h4 style='color:red;'>👥 Project Team</h4>", unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
