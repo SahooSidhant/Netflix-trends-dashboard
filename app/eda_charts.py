@@ -37,7 +37,7 @@ def show():
             "insights": "Movies dominate the catalog."
         },
         {
-            "title": "Top 10 Genres by Number of Titles (Donut Chart)",
+            "title": "Top 10 Genres by Number of Titles",
             "plot_func": lambda ax: (
                 df_exploded['genre']
                 .value_counts()
@@ -49,7 +49,7 @@ def show():
             "insights": "Drama and Comedy dominate the genre distribution."
         },
         {
-            "title": "Top 10 Countries by Content Count (Line Chart)",
+            "title": "Top 10 Countries by Content Count",
             "plot_func": lambda ax: sns.lineplot(
                 x=df['country_abbr'].value_counts().head(10).index,
                 y=df['country_abbr'].value_counts().head(10).values,
@@ -109,7 +109,7 @@ def show():
             "insights": "Documentaries longer."
         },
         {
-        "title": "Box Plot of Movie Durations by Genre",
+        "title": "Movie Durations by Genre",
         "plot_func": lambda ax: sns.boxplot(
         data=df_exploded[df_exploded['type'] == 'Movie'].loc[lambda x: x['genre'].isin(
         x['genre'].value_counts().head(8).index)],
@@ -126,7 +126,7 @@ def show():
             "insights": "Mid-year and year-end surges."
         },
         {
-            "title": "Top Production Countries (Horizontal Bar Chart)",
+            "title": "Top Production Countries",
             "plot_func": lambda ax: df['country_abbr'].value_counts().head(10).sort_values().plot(kind='barh', color="#E50914", ax=ax),
             "columns": ["country"],
             "purpose": "Visualize top producing countries clearly.",
@@ -146,14 +146,14 @@ def show():
             "insights": "Shows vs movies differ by country."
         },
         {
-            "title": "TV Show Duration (Seasons) Pie Chart",
+            "title": "TV Show Duration (Seasons)",
             "plot_func": lambda ax: df[df['type']=='TV Show']['season_count'].value_counts().head(5).rename(lambda x: f"Season {int(x)}").plot(kind='pie', autopct='%1.1f%%', ax=ax),
             "columns": ["type", "season_count"],
             "purpose": "TV show length distribution.",
             "insights": "Most have just 1 season."
         },
         {
-            "title": "Content Count by Day of Week Added (Line Chart)",
+            "title": "Content Count by Day of Week Added",
             "plot_func": lambda ax: sns.lineplot(
                 x=pd.to_datetime(df['date_added']).dt.day_name().map({
                     'Monday':'Mon', 'Tuesday':'Tue', 'Wednesday':'Wed', 'Thursday':'Thu',
@@ -177,7 +177,7 @@ def show():
             "insights": "Season count and release year show slight correlation."
         },
         {
-            "title": "Monthly Releases Trend by Content Type (Line Chart)",
+            "title": "Monthly Releases Trend by Content Type",
             "plot_func": lambda ax: (
                 df.groupby([pd.to_datetime(df['date_added']).dt.to_period('M'), 'type'])
                 .size()
