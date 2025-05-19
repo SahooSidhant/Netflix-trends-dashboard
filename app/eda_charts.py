@@ -2,40 +2,30 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 
-# Set consistent Seaborn style
 sns.set(style="darkgrid")
 
 def show():
     st.title("📊 Exploratory Data Analysis")
 
-    # Load cleaned Netflix dataset (make sure the path is correct)
+    # Load dataset
     df = pd.read_csv("data/netflix_cleaned.csv")
 
-    # Clean 'duration' column: extract numeric minutes only
+    # Clean 'duration' column
     df['duration'] = df['duration'].str.extract('(\d+)').astype(float)
 
-    # Explode genres for detailed genre analysis
+    # Explode genres
     df_exploded = df.copy()
     df_exploded['genre'] = df_exploded['listed_in'].str.split(', ')
     df_exploded = df_exploded.explode('genre')
 
-    # Dictionary for country abbreviations
+    # Map country abbreviations
     country_abbr = {
-        'United States': 'US',
-        'United Kingdom': 'UK',
-        'India': 'IN',
-        'South Korea': 'KR',
-        'Canada': 'CA',
-        'Australia': 'AU',
-        'Germany': 'DE',
-        'France': 'FR',
-        'Japan': 'JP',
-        'Mexico': 'MX',
-        # Add more if needed
+        'United States': 'US', 'United Kingdom': 'UK', 'India': 'IN',
+        'South Korea': 'KR', 'Canada': 'CA', 'Australia': 'AU',
+        'Germany': 'DE', 'France': 'FR', 'Japan': 'JP', 'Mexico': 'MX'
     }
-
-    # Map country abbreviations, fallback to original if no abbreviation
     df['country_abbr'] = df['country'].map(country_abbr).fillna(df['country'])
 
     charts = [
@@ -43,109 +33,104 @@ def show():
             "title": "Distribution of Content Type",
             "plot_func": lambda ax: sns.countplot(data=df, x="type", palette="Set2", ax=ax),
             "columns": ["type"],
-            "purpose": "Shows how much content is TV Shows vs Movies.",
-            "insights": "Movies dominate the Netflix catalog."
+            "purpose": "Shows TV Shows vs Movies count.",
+            "insights": "Movies dominate the catalog."
         },
         {
-            "title": "Top 10 Genres by Number of Titles",
-            "plot_func": lambda ax: df_exploded['genre'].value_counts().head(10).plot(kind='bar', color="#E50914", ax=ax),
+            "title": "Top 10 Genres by Number of Titles (Donut Chart)",
+            "plot_func": lambda ax: (
+                df_exploded['genre']
+                .value_counts()
+                .head(10)
+                .plot(kind='pie', autopct='%1.1f%%', startangle=90, wedgeprops=dict(width=0.4), ax=ax)
+            ),
             "columns": ["listed_in"],
-            "purpose": "Reveals most popular genres.",
-            "insights": "Dramas and Comedies are the most frequent."
+            "purpose": "Visualize the genre share in a proportionate manner.",
+            "insights": "Drama and Comedy dominate the genre distribution."
         },
         {
-            "title": "Top 10 Countries by Content Count",
-            "plot_func": lambda ax: df['country_abbr'].value_counts().head(10).plot(kind='bar', color="#E50914", ax=ax),
+            "title": "Top 10 Countries by Content Count (Line Chart)",
+            "plot_func": lambda ax: sns.lineplot(
+                x=df['country_abbr'].value_counts().head(10).index,
+                y=df['country_abbr'].value_counts().head(10).values,
+                marker="o", color="#E50914", ax=ax
+            ),
             "columns": ["country"],
-            "purpose": "Finds which countries contribute the most content.",
-            "insights": "US, India, and UK dominate."
+            "purpose": "Country contributions over ranking.",
+            "insights": "US, IN, UK lead."
         },
         {
             "title": "Number of Releases per Year",
             "plot_func": lambda ax: df['release_year'].value_counts().sort_index().plot(kind='line', color="#E50914", ax=ax),
             "columns": ["release_year"],
-            "purpose": "Tracks release trends over time.",
-            "insights": "Sharp increase from 2015–2020, then a dip (likely pandemic)."
+            "purpose": "Trends over years.",
+            "insights": "Spike from 2015-2020."
         },
         {
             "title": "TV Shows: Season Count Distribution",
             "plot_func": lambda ax: df[df['type'] == 'TV Show']['season_count'].value_counts().sort_index().rename(lambda x: f"Season {int(x)}").plot(kind='bar', color="#E50914", ax=ax),
             "columns": ["type", "season_count"],
-            "purpose": "Shows how many seasons most TV shows have.",
-            "insights": "1–3 seasons are most common."
+            "purpose": "How many seasons?",
+            "insights": "1–3 seasons common."
         },
         {
             "title": "Top 10 Directors with Most Titles",
             "plot_func": lambda ax: df['director'].value_counts().head(10).plot(kind='bar', color="#E50914", ax=ax),
             "columns": ["director"],
-            "purpose": "Highlights prolific directors on Netflix.",
-            "insights": "Some directors have 10+ titles."
+            "purpose": "Prolific directors.",
+            "insights": "Some have 10+ titles."
         },
         {
             "title": "Movie Duration Distribution",
             "plot_func": lambda ax: df[df['type'] == 'Movie']['duration'].plot(kind='hist', bins=30, color="#E50914", ax=ax),
             "columns": ["type", "duration"],
-            "purpose": "Analyzes movie length.",
-            "insights": "Most movies are between 80–120 minutes."
+            "purpose": "Movie length distribution.",
+            "insights": "Most between 80-120 mins."
         },
         {
             "title": "Content Rating Distribution",
             "plot_func": lambda ax: df['rating'].value_counts().plot(kind='bar', color="#E50914", ax=ax),
             "columns": ["rating"],
-            "purpose": "Shows how content is rated (TV-MA, PG-13, etc.).",
+            "purpose": "Rating frequency.",
             "insights": "TV-MA and TV-14 dominate."
         },
         {
             "title": "Content Added Over Time",
             "plot_func": lambda ax: pd.to_datetime(df['date_added']).dt.year.value_counts().sort_index().plot(kind='line', color="#E50914", ax=ax),
             "columns": ["date_added"],
-            "purpose": "Tracks when content was added to Netflix.",
-            "insights": "Major additions from 2017 to 2020."
+            "purpose": "Addition trend.",
+            "insights": "Major additions 2017-2020."
         },
         {
-            "title": "Top 10 Most Common Actors",
-            "plot_func": lambda ax: pd.Series(', '.join(df['cast'].dropna()).split(', ')).value_counts().head(10).plot(kind='bar', color="#E50914", ax=ax),
-            "columns": ["cast"],
-            "purpose": "Reveals frequently cast actors.",
-            "insights": "Many recurring faces across shows/movies."
-        },
-        {
-            "title": "Average Duration by Genre (Movies)",
-            "plot_func": lambda ax: df_exploded[df_exploded['type'] == 'Movie'].groupby('genre')['duration'].mean().sort_values(ascending=False).head(10).plot(kind='bar', color='#E50914', ax=ax),
+            "title": "Average Movie Duration by Genre",
+            "plot_func": lambda ax: df_exploded[df_exploded['type'] == 'Movie'].groupby('genre')['duration'].mean().sort_values(ascending=False).head(10).plot(kind='bar', color="#E50914", ax=ax),
             "columns": ["type", "listed_in", "duration"],
-            "purpose": "Shows average movie length per genre.",
-            "insights": "Documentaries tend to be longer."
+            "purpose": "Avg movie length by genre.",
+            "insights": "Documentaries longer."
         },
         {
-            "title": "Genre Count for TV Shows",
-            "plot_func": lambda ax: df_exploded[df_exploded['type'] == 'TV Show']['genre'].value_counts().head(10).plot(kind='bar', color='#E50914', ax=ax),
-            "columns": ["type", "listed_in"],
-            "purpose": "What genres are most common for TV shows.",
-            "insights": "International TV, Drama, and Kids’ shows are common."
+        "title": "Box Plot of Movie Durations by Genre",
+        "plot_func": lambda ax: sns.boxplot(
+        data=df_exploded[df_exploded['type'] == 'Movie'].loc[lambda x: x['genre'].isin(
+        x['genre'].value_counts().head(8).index)],
+        x="duration", y="genre", palette="Reds", ax=ax),"columns": ["type", "listed_in", "duration"],"purpose": "Spread of movie durations across genres.","insights": "Documentaries have high variance; most other genres fall between 60–120 mins."
         },
         {
             "title": "Content Count by Month Added",
             "plot_func": lambda ax: pd.to_datetime(df['date_added']).dt.month.map({
-                1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
-                7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
-            }).value_counts().reindex(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']).plot(kind='bar', color="#E50914", ax=ax),
+                1:'Jan', 2:'Feb', 3:'Mar', 4:'Apr', 5:'May', 6:'Jun',
+                7:'Jul', 8:'Aug', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dec'
+            }).value_counts().reindex(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']).plot(kind='bar', color="#E50914", ax=ax),
             "columns": ["date_added"],
-            "purpose": "Which months Netflix adds more content.",
-            "insights": "Mid-year and year-end see content surges."
+            "purpose": "Monthly additions.",
+            "insights": "Mid-year and year-end surges."
         },
         {
-            "title": "Top Production Countries (Grouped)",
-            "plot_func": lambda ax: (
-                df['country_abbr']
-                .value_counts()
-                .groupby(lambda x: x if df['country_abbr'].value_counts()[x] > 50 else 'Others')
-                .sum()
-                .sort_values(ascending=False)
-                .plot(kind='bar', color="#E50914", ax=ax)
-            ),
+            "title": "Top Production Countries (Horizontal Bar Chart)",
+            "plot_func": lambda ax: df['country_abbr'].value_counts().head(10).sort_values().plot(kind='barh', color="#E50914", ax=ax),
             "columns": ["country"],
-            "purpose": "Group small countries to avoid clutter.",
-            "insights": "Helps visualize major content producers clearly."
+            "purpose": "Visualize top producing countries clearly.",
+            "insights": "US and India dominate production."
         },
         {
             "title": "Movie vs TV Show by Country (Top 5)",
@@ -154,52 +139,69 @@ def show():
                 .groupby(['country_abbr', 'type'])
                 .size()
                 .unstack()
-                .plot(kind='bar', ax=ax, color=["#E50914", "#430b0b"])
+                .plot(kind='bar', stacked=True, color=["#E50914", "#430b0b"], ax=ax)
             ),
             "columns": ["country", "type"],
-            "purpose": "Compare content type in top countries.",
-            "insights": "TV shows are more common in India and UK than in US."
+            "purpose": "Content type by country.",
+            "insights": "Shows vs movies differ by country."
         },
         {
             "title": "TV Show Duration (Seasons) Pie Chart",
-            "plot_func": lambda ax: df[df['type'] == 'TV Show']['season_count'].value_counts().head(5).rename(lambda x: f"Season {int(x)}").plot(kind='pie', autopct='%1.1f%%', ax=ax),
+            "plot_func": lambda ax: df[df['type']=='TV Show']['season_count'].value_counts().head(5).rename(lambda x: f"Season {int(x)}").plot(kind='pie', autopct='%1.1f%%', ax=ax),
             "columns": ["type", "season_count"],
-            "purpose": "Quick view of TV show lengths.",
-            "insights": "Most shows have just 1 season."
+            "purpose": "TV show length distribution.",
+            "insights": "Most have just 1 season."
         },
         {
-            "title": "Content Count by Day of Week Added",
-            "plot_func": lambda ax: pd.to_datetime(df['date_added']).dt.day_name().map({
-                'Monday': 'Mon', 'Tuesday': 'Tue', 'Wednesday': 'Wed', 'Thursday': 'Thu',
-                'Friday': 'Fri', 'Saturday': 'Sat', 'Sunday': 'Sun'
-            }).value_counts().reindex(['Mon','Tue','Wed','Thu','Fri','Sat','Sun']).plot(kind='bar', color="#E50914", ax=ax),
+            "title": "Content Count by Day of Week Added (Line Chart)",
+            "plot_func": lambda ax: sns.lineplot(
+                x=pd.to_datetime(df['date_added']).dt.day_name().map({
+                    'Monday':'Mon', 'Tuesday':'Tue', 'Wednesday':'Wed', 'Thursday':'Thu',
+                    'Friday':'Fri', 'Saturday':'Sat', 'Sunday':'Sun'
+                }).value_counts().reindex(['Mon','Tue','Wed','Thu','Fri','Sat','Sun']).index,
+                y=pd.to_datetime(df['date_added']).dt.day_name().map({
+                    'Monday':'Mon', 'Tuesday':'Tue', 'Wednesday':'Wed', 'Thursday':'Thu',
+                    'Friday':'Fri', 'Saturday':'Sat', 'Sunday':'Sun'
+                }).value_counts().reindex(['Mon','Tue','Wed','Thu','Fri','Sat','Sun']).values,
+                marker="o", color="#E50914", ax=ax
+            ),
             "columns": ["date_added"],
-            "purpose": "Check when content gets added weekly.",
-            "insights": "Fridays and weekends see more additions."
+            "purpose": "Weekday content additions.",
+            "insights": "Fridays/weekends popular."
         },
         {
-            "title": "Top 10 Countries by Content Count (Abbreviated)",
-            "plot_func": lambda ax: df['country_abbr'].value_counts().head(10).plot(kind='bar', color="#E50914", ax=ax),
-            "columns": ["country"],
-            "purpose": "Shows top countries contributing content with short country codes.",
-            "insights": "Abbreviated country codes provide cleaner, concise visualization."
+            "title": "Correlation Heatmap of Numeric Features",
+            "plot_func": lambda ax: sns.heatmap(df.select_dtypes(include=np.number).corr(), annot=True, cmap='coolwarm', ax=ax),
+            "columns": ["duration", "release_year", "season_count"],
+            "purpose": "Correlation between numeric fields.",
+            "insights": "Season count and release year show slight correlation."
+        },
+        {
+            "title": "Monthly Releases Trend by Content Type (Line Chart)",
+            "plot_func": lambda ax: (
+                df.groupby([pd.to_datetime(df['date_added']).dt.to_period('M'), 'type'])
+                .size()
+                .unstack()
+                .fillna(0)
+                .plot(ax=ax, color=["#E50914", "#430b0b"])
+            ),
+            "columns": ["date_added", "type"],
+            "purpose": "Monthly release trends by content type.",
+            "insights": "Movies and TV Shows added variably over time."
         }
     ]
 
-    # Layout: 3 charts per row
     for i in range(0, len(charts), 3):
-        row = st.columns(3)
-        for j in range(3):
-            if i + j < len(charts):
-                chart = charts[i + j]
-                with row[j]:
-                    st.markdown(f"<h4 style='color:#E50914'>{chart['title']}</h4>", unsafe_allow_html=True)
-                    fig, ax = plt.subplots(figsize=(5, 4))
-                    try:
-                        chart["plot_func"](ax)
-                        st.pyplot(fig)
-                    except Exception as e:
-                        st.error(f"Error rendering chart: {e}")
-                    st.markdown(f"<b style='color:#E50914'>Columns Used:</b> {', '.join(chart['columns'])}", unsafe_allow_html=True)
-                    st.markdown(f"<b style='color:#E50914'>Purpose:</b> {chart['purpose']}", unsafe_allow_html=True)
-                    st.markdown(f"<b style='color:#E50914'>Insights:</b> {chart['insights']}", unsafe_allow_html=True)
+        cols = st.columns(3)
+        for j, chart in enumerate(charts[i:i+3]):
+            with cols[j]:
+                st.subheader(chart["title"])
+                fig, ax = plt.subplots(figsize=(5, 4))
+                try:
+                    chart["plot_func"](ax)
+                    st.pyplot(fig)
+                except Exception as e:
+                    st.error(f"Error rendering chart: {e}")
+                st.markdown(f"**Columns Used:** {', '.join(chart['columns'])}")
+                st.markdown(f"**Purpose:** {chart['purpose']}")
+                st.markdown(f"**Insights:** {chart['insights']}")
