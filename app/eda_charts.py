@@ -202,6 +202,6 @@ def show():
                     st.pyplot(fig)
                 except Exception as e:
                     st.error(f"Error rendering chart: {e}")
-                st.markdown(f"**Columns Used:** {', '.join(chart['columns'])}")
-                st.markdown(f"**Purpose:** {chart['purpose']}")
-                st.markdown(f"**Insights:** {chart['insights']}")
+                st.markdown(f"<span style='color:red'><b>Columns Used:</b></span> {', '.join(chart['columns'])}", unsafe_allow_html=True)
+                st.markdown(f"<span style='color:red'><b>Purpose:</b></span> {chart['purpose']}", unsafe_allow_html=True)
+                st.markdown(f"<span style='color:red'><b>Insights:</b></span> {chart['insights']}", unsafe_allow_html=True)
