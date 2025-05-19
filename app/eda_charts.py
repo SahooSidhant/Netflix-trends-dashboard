@@ -133,7 +133,7 @@ def show():
             "insights": "US and India dominate production."
         },
         {
-            "title": "Movie vs TV Show by Country (Top 5)",
+            "title": "Movie vs TV Show by Country(Top 5)",
             "plot_func": lambda ax: (
                 df[df['country_abbr'].isin(df['country_abbr'].value_counts().head(5).index)]
                 .groupby(['country_abbr', 'type'])
