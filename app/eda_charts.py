@@ -114,7 +114,7 @@ def show():
         data=df_exploded[df_exploded['type'] == 'Movie'].loc[lambda x: x['genre'].isin(
         x['genre'].value_counts().head(8).index)],
         x="duration", y="genre", palette="Reds", ax=ax),"columns": ["type", "listed_in", "duration"],"purpose": "Spread of movie durations across genres.","insights": "Documentaries have high variance; most other genres fall between 60–120 mins."
-        },
+        },  
         {
             "title": "Content Count by Month Added",
             "plot_func": lambda ax: pd.to_datetime(df['date_added']).dt.month.map({
